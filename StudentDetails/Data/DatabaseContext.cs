@@ -9,7 +9,7 @@ namespace StudentDetails.Data
         {
 
         }
-        public DbSet<Student> Student_Information { get; set; }
-        public DbSet<StudentAddress> Student_Address_Info { get; set; }
+        public DbSet<Student> Students { get; set; }
+        public DbSet<StudentAddress> StudentAddresses { get; set; }
     }
 }

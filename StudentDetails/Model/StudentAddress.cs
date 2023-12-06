@@ -5,9 +5,13 @@ namespace StudentDetails.Model
 {
     public class StudentAddress
     {
-        [Key,ForeignKey("Student")]
-        public int AddressId { get; set; }
+        [Key]
+        public int Id { get; set; }
         public string Address { get; set; }
-        public virtual Student Student { get; set; }
+
+        //[ForeignKey("Student")]
+        //public int StudentId { get; set; }
+
+        //public virtual Student Student { get; set; }
     }
 }

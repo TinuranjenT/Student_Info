@@ -11,8 +11,8 @@ using StudentDetails.Data;
 namespace StudentDetails.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20231205110915_FifthMigration")]
-    partial class FifthMigration
+    [Migration("20231206065420_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,40 +40,42 @@ namespace StudentDetails.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("StudentAddressId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Student_Information");
+                    b.HasIndex("StudentAddressId");
+
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("StudentDetails.Model.StudentAddress", b =>
                 {
-                    b.Property<int>("AddressId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("AddressId");
+                    b.HasKey("Id");
 
-                    b.ToTable("Student_Address_Info");
-                });
-
-            modelBuilder.Entity("StudentDetails.Model.StudentAddress", b =>
-                {
-                    b.HasOne("StudentDetails.Model.Student", "Student")
-                        .WithOne("StudentAddress")
-                        .HasForeignKey("StudentDetails.Model.StudentAddress", "AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Student");
+                    b.ToTable("StudentAddresses");
                 });
 
             modelBuilder.Entity("StudentDetails.Model.Student", b =>
                 {
-                    b.Navigation("StudentAddress")
+                    b.HasOne("StudentDetails.Model.StudentAddress", "StudentAddress")
+                        .WithMany()
+                        .HasForeignKey("StudentAddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("StudentAddress");
                 });
 #pragma warning restore 612, 618
         }

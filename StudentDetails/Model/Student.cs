@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StudentDetails.Model
 {
@@ -8,6 +9,9 @@ namespace StudentDetails.Model
         public int Id { get; set; }
         public string Name { get; set; }
         public string Department { get; set; }
+
+        [ForeignKey(nameof(StudentAddress))]
+        public int StudentAddressId {  get; set; }
         public virtual StudentAddress StudentAddress { get; set; }
         //public string Description { get; set; }
     }
