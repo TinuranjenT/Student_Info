@@ -20,18 +20,16 @@ namespace StudentDetails.Controllers
         public IActionResult Get()
         {
             List<Student> students = databaseContext.Students.Include(s => s.StudentAddress).ToList();
-            //List<Student>students = new List<Student>();
-            //students = databaseContext.Students.ToList();
+            if(students == null)
+            {
+                return NotFound();
+            }
             return Ok(students);
-            
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            //Student student = databaseContext.Students.FirstOrDefault(x => x.Id == id);
-            //return Ok(student);
-
             Student student = databaseContext.Students.Include(s => s.StudentAddress).FirstOrDefault(s => s.Id == id);
             if (student == null)
             {
@@ -66,6 +64,17 @@ namespace StudentDetails.Controllers
             return Ok(existingStudent);
         }
 
+        [HttpPatch("{id}")]
+
+        public IActionResult Patch(int id, [FromBody] string Address)
+        {
+            var student = databaseContext.Students.Include(s => s.StudentAddress).FirstOrDefault(s => s.Id == id);
+            student.StudentAddress.Address = Address;
+            databaseContext.SaveChanges();  
+            return Ok(student);
+
+        }
+
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
@@ -75,38 +84,35 @@ namespace StudentDetails.Controllers
             {
                 return NotFound();
             }
-
-            // Remove the related StudentAddress entity
             if (student.StudentAddress != null)
             {
                 databaseContext.StudentAddresses.Remove(student.StudentAddress);
             }
-
-            // Remove the Student entity
             databaseContext.Students.Remove(student);
             databaseContext.SaveChanges();
 
             return NoContent();
         }
 
-        //[HttpPut("{id}")]
-        //public IActionResult Update(int id, [FromBody] Student updatedStudent)
-        //{
-        //    Student existingStudent = databaseContext.Students.Find(id);
+        [HttpGet("search")]
+        public IActionResult Search(string searchItem)
+        {
+            if (string.IsNullOrEmpty(searchItem))
+            {
+                return NotFound();
+            }
 
-        //    if (existingStudent == null)
-        //    {
-        //        return NotFound();
-        //    }
+            List<Student> matchingStudents = databaseContext.Students
+                .Where(s =>
+                    s.Id.ToString().StartsWith(searchItem) ||
+                    s.Name.StartsWith(searchItem) ||
+                    s.Department.StartsWith(searchItem) ||
+                    s.StudentAddress.Address.StartsWith(searchItem))
+                .Include(s => s.StudentAddress)
+                .ToList();
 
-        //    existingStudent.Name = updatedStudent.Name;
-        //    existingStudent.Department = updatedStudent.Department;
-
-        //    databaseContext.SaveChanges();
-
-        //    return Ok(existingStudent);
-        //}
-
+            return Ok(matchingStudents);
+        }
 
 
 

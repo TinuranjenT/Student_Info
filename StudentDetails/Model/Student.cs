@@ -12,7 +12,7 @@ namespace StudentDetails.Model
 
         [ForeignKey(nameof(StudentAddress))]
         public int StudentAddressId {  get; set; }
-        public virtual StudentAddress StudentAddress { get; set; }
+        public virtual StudentAddress StudentAddress { get; set; }            //reference navigation property
         //public string Description { get; set; }
     }
 }
