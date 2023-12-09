@@ -84,6 +84,34 @@ namespace StudentDetails.Repository
                  .ThenBy(s => s.StudentAddress.Address)
                 .Include(s => s.StudentAddress)
                 .ToList();
-        } 
+        }
+        
+
+        public Dictionary<string, List<Student>> GroupByDepartment()
+        {
+            var groupedData = databaseContext.Students
+                .Include(s => s.StudentAddress)
+                .GroupBy(s => s.Department)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(student => new Student
+                    {
+                        Id = student.Id,
+                        Name = student.Name,
+                        Department = student.Department,
+                        StudentAddressId = student.StudentAddressId,
+                        StudentAddress = new StudentAddress
+                        {
+                            Id = student.StudentAddress.Id,
+                            Address = student.StudentAddress.Address
+                        }
+                    }).ToList()
+                );
+
+            return groupedData;
+        }
+
+
+            
     }
 }

@@ -82,5 +82,12 @@ namespace StudentDetails.Controllers
             List<Student> matchingStudents = studentRepository.searchStudents(searchItem);
             return Ok(matchingStudents);
         }
+
+        [HttpGet("GroupByDepartment")]
+        public IActionResult GetStudentGroupByDepartment()
+        {
+            var studentsListGroupByDepartment = studentRepository.GroupByDepartment();
+            return Ok(studentsListGroupByDepartment);
+        }
     }
 }
