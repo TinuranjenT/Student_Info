@@ -7,7 +7,7 @@ namespace StudentDetails.Model
     {
         [Key]
         public int Id { get; set; }
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
         //[ForeignKey("Student")]
         //public int StudentId { get; set; }

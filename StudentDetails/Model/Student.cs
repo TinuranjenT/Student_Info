@@ -7,12 +7,12 @@ namespace StudentDetails.Model
     {
         [Key]
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Department { get; set; }
+        public string? Name { get; set; }
+        public string? Department { get; set; }
 
         [ForeignKey(nameof(StudentAddress))]
         public int StudentAddressId {  get; set; }
-        public virtual StudentAddress StudentAddress { get; set; }            //reference navigation property
+        public virtual StudentAddress? StudentAddress { get; set; }            //reference navigation property
         //public string Description { get; set; }
     }
 }

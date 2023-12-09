@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using StudentDetails.Data;
 using StudentDetails.Model;
+using StudentDetails.Repository;
 
 namespace StudentDetails.Controllers
 {
@@ -10,16 +12,16 @@ namespace StudentDetails.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        private readonly DatabaseContext databaseContext;
-        public StudentController(DatabaseContext databaseContext)
+        private readonly StudentRepository studentRepository;
+        public StudentController(StudentRepository studentRepository)
         {
-            this.databaseContext = databaseContext;
+            this.studentRepository = studentRepository;
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            List<Student> students = databaseContext.Students.Include(s => s.StudentAddress).ToList();
+            List<Student> students = studentRepository.GetStudents();
             if(students == null)
             {
                 return NotFound();
@@ -30,7 +32,7 @@ namespace StudentDetails.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            Student student = databaseContext.Students.Include(s => s.StudentAddress).FirstOrDefault(s => s.Id == id);
+            Student student = studentRepository.GetStudentById(id);
             if (student == null)
             {
                 return NotFound();
@@ -41,8 +43,7 @@ namespace StudentDetails.Controllers
         [HttpPost]
         public IActionResult Create(Student student)
         {
-            databaseContext.Add(student);
-            databaseContext.SaveChanges();
+            studentRepository.CreateStudent(student);
             return Ok(student);
         }
 
@@ -50,72 +51,36 @@ namespace StudentDetails.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] Student updatedStudent)
         {
-            Student existingStudent = databaseContext.Students.Include(s => s.StudentAddress).FirstOrDefault(s => s.Id == id);
-
-            if (existingStudent == null)
-            {
-                return NotFound();
-            }
-            existingStudent.Name = updatedStudent.Name;
-            existingStudent.Department = updatedStudent.Department;
-            existingStudent.StudentAddress.Address = updatedStudent.StudentAddress.Address;
-
-            databaseContext.SaveChanges();
-            return Ok(existingStudent);
+            studentRepository.UpdateStudent(id, updatedStudent);
+            return Ok(updatedStudent);
         }
 
         [HttpPatch("{id}")]
 
-        public IActionResult Patch(int id, [FromBody] string Address)
+        public IActionResult Patch(int id, [FromBody] Student student)
         {
-            var student = databaseContext.Students.Include(s => s.StudentAddress).FirstOrDefault(s => s.Id == id);
-            student.StudentAddress.Address = Address;
-            databaseContext.SaveChanges();  
+          
+            studentRepository.PatchStudent(id, student);
             return Ok(student);
-
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            Student student = databaseContext.Students.Include(s => s.StudentAddress).FirstOrDefault(s => s.Id == id);
-
-            if (student == null)
-            {
-                return NotFound();
-            }
-            if (student.StudentAddress != null)
-            {
-                databaseContext.StudentAddresses.Remove(student.StudentAddress);
-            }
-            databaseContext.Students.Remove(student);
-            databaseContext.SaveChanges();
-
-            return NoContent();
+            studentRepository.DeleteStudent(id);
+            return Ok();
         }
 
         [HttpGet("search")]
         public IActionResult Search(string searchItem)
         {
-            if (string.IsNullOrEmpty(searchItem))
+            if (searchItem == null)
             {
                 return NotFound();
             }
 
-            List<Student> matchingStudents = databaseContext.Students
-                .Where(s =>
-                    s.Id.ToString().StartsWith(searchItem) ||
-                    s.Name.StartsWith(searchItem) ||
-                    s.Department.StartsWith(searchItem) ||
-                    s.StudentAddress.Address.StartsWith(searchItem))
-                .Include(s => s.StudentAddress)
-                .ToList();
-
+            List<Student> matchingStudents = studentRepository.searchStudents(searchItem);
             return Ok(matchingStudents);
         }
-
-
-
-
     }
 }

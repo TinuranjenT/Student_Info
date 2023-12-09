@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using StudentDetails.Data;
+using StudentDetails.Repository;
 
 namespace StudentDetails
 {
@@ -18,8 +19,10 @@ namespace StudentDetails
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped<StudentRepository>();
 
             var app = builder.Build();
+           
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
